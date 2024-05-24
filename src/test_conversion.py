@@ -1,8 +1,10 @@
 import unittest
 
-from conversion import text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_text_nodes
+from conversion import (text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link,
+                        text_to_text_nodes, markdown_to_blocks)
 from leafnode import LeafNode
-from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link, text_type_code
+from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link, \
+    text_type_code
 
 
 class TestConversion(unittest.TestCase):
@@ -148,6 +150,29 @@ class TestConversion(unittest.TestCase):
             TextNode("link", text_type_link, "https://boot.dev")
         ]
         self.assertEqual(expected, text_to_text_nodes(test_string))
+
+    def test_markdown_to_block(self):
+        test_input = """
+This is **bolded** paragraph
+
+This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line
+
+* This is a list
+* with items
+        """
+        expected = [
+            "This is **bolded** paragraph",
+            (
+                "This is another paragraph with *italic* text and `code` here\n"
+                "This is the same paragraph on a new line"
+            ),
+            (
+                "* This is a list\n"
+                "* with items"
+            )
+        ]
+        self.assertEqual(expected, markdown_to_blocks(test_input))
 
 
 if __name__ == "__main__":

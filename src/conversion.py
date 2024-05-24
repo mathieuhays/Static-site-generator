@@ -119,3 +119,17 @@ def text_to_text_nodes(text):
     nodes = split_nodes_delimiter(nodes, "*", text_type_italic)
     nodes = split_nodes_delimiter(nodes, "`", text_type_code)
     return nodes
+
+
+def markdown_to_blocks(text):
+    blocks = []
+    lines = text.split("\n\n")
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped == "":
+            continue
+
+        blocks.append(stripped)
+
+    return blocks
