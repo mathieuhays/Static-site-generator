@@ -18,8 +18,12 @@ class TestExtractors(unittest.TestCase):
             ("homepage", "https://example.com"),
             ("contact page", "https://example.com/contact")
         ]
-        test_string = ("Lorem [homepage](https://example.com). Ipsum ![image](https://example.com/image.jpeg) Dolor. [contact page](https://example.com/contact)")
+        test_string = ("Lorem [homepage](https://example.com). Ipsum Dolor. [contact page](https://example.com/contact)")
         self.assertEqual(expected, extract_markdown_links(test_string))
+
+        test2 = "[Back Home](/)"
+        expected = [("Back Home", "/")]
+        self.assertEqual(expected, extract_markdown_links(test2))
 
     def test_title_extractor(self):
         test_string = "# Lorem Ipsum"

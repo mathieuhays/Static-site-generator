@@ -137,6 +137,10 @@ class TestConversion(unittest.TestCase):
         ]
         self.assertEqual(expected, split_nodes_link([test_node]))
 
+        test2 = TextNode("[Back Home](/)", text_type_text)
+        expected = [TextNode("Back Home", text_type_link, "/")]
+        self.assertEqual(expected, split_nodes_link([test2]))
+
     def test_text_to_nodes(self):
         test_string = "This is **text** with an *italic* word and a `code block` and an ![image](/img.png) and a [link](https://boot.dev)"
         expected = [
@@ -179,9 +183,9 @@ This is the same paragraph on a new line
     def test_block_to_heading(self):
         content = "### Heading *italic* test"
         expected = ParentNode("h3", [
-            TextNode("Heading ", text_type_text),
-            TextNode("italic", text_type_italic),
-            TextNode(" test", text_type_text)
+            LeafNode(None, "Heading "),
+            LeafNode("i", "italic"),
+            LeafNode(None, " test")
         ])
         self.assertEqual(expected, block_to_heading(content))
 
@@ -189,7 +193,7 @@ This is the same paragraph on a new line
         content = "```\nbody { color: #fff; }\n```"
         expected = ParentNode("pre", [
             ParentNode("code", [
-                TextNode("body { color: #fff; }", text_type_text)
+                LeafNode(None, "body { color: #fff; }")
             ])
         ])
         self.assertEqual(expected, block_to_code(content))
@@ -197,31 +201,31 @@ This is the same paragraph on a new line
     def test_block_to_list_ul(self):
         content = "- item 1\n- item 2\n- item 3"
         expected = ParentNode("ul", [
-            ParentNode("li", [TextNode("item 1", text_type_text)]),
-            ParentNode("li", [TextNode("item 2", text_type_text)]),
-            ParentNode("li", [TextNode("item 3", text_type_text)])
+            ParentNode("li", [LeafNode(None, "item 1")]),
+            ParentNode("li", [LeafNode(None, "item 2")]),
+            ParentNode("li", [LeafNode(None, "item 3")])
         ])
         self.assertEqual(expected, block_to_list(content, "ul"))
 
     def test_block_to_list_ol(self):
         content = "1. item 1\n2. item 2\n3. item 3"
         expected = ParentNode("ol", [
-            ParentNode("li", [TextNode("item 1", text_type_text)]),
-            ParentNode("li", [TextNode("item 2", text_type_text)]),
-            ParentNode("li", [TextNode("item 3", text_type_text)])
+            ParentNode("li", [LeafNode(None, "item 1")]),
+            ParentNode("li", [LeafNode(None, "item 2")]),
+            ParentNode("li", [LeafNode(None, "item 3")])
         ])
         self.assertEqual(expected, block_to_list(content, "ol"))
 
     def test_block_to_quote(self):
         content = "> Lorem Ipsum\n> Dolor"
         expected = ParentNode("blockquote", [
-            TextNode("Lorem Ipsum\nDolor", text_type_text)
+            LeafNode(None, "Lorem Ipsum\nDolor")
         ])
         self.assertEqual(expected, block_to_quote(content))
 
     def test_block_to_paragraph(self):
         content = "Some content"
-        expected = ParentNode("p", [TextNode("Some content", text_type_text)])
+        expected = ParentNode("p", [LeafNode(None, "Some content")])
         self.assertEqual(expected, block_to_paragraph(content))
 
     def test_markdown_to_html_node(self):
@@ -234,22 +238,22 @@ Lorem **Ipsum** Dolor
 - list `item` 2
         """
         expected = ParentNode("div", [
-            ParentNode("h1", [TextNode("Heading", text_type_text)]),
+            ParentNode("h1", [LeafNode(None, "Heading")]),
             ParentNode("p", [
-                TextNode("Lorem ", text_type_text),
-                TextNode("Ipsum", text_type_bold),
-                TextNode(" Dolor", text_type_text)
+                LeafNode(None, "Lorem "),
+                LeafNode("b", "Ipsum"),
+                LeafNode(None, " Dolor")
             ]),
             ParentNode("ul", [
                 ParentNode("li", [
-                    TextNode("list ", text_type_text),
-                    TextNode("item", text_type_italic),
-                    TextNode(" 1", text_type_text)
+                    LeafNode(None, "list "),
+                    LeafNode("i", "item"),
+                    LeafNode(None, " 1")
                 ]),
                 ParentNode("li", [
-                    TextNode("list ", text_type_text),
-                    TextNode("item", text_type_code),
-                    TextNode(" 2", text_type_text)
+                    LeafNode(None, "list "),
+                    LeafNode("code", "item"),
+                    LeafNode(None, " 2")
                 ])
             ])
         ])

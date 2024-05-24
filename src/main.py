@@ -1,7 +1,7 @@
 import os.path
 import shutil
 
-from textnode import TextNode
+from generator import generate_page
 
 separator = "==========================="
 
@@ -10,9 +10,9 @@ def main():
     print("Starting...")
     print(separator)
 
-    base_dir = os.path.dirname(__file__)
-    static_dir = os.path.join(base_dir, "..", "static")
-    public_dir = os.path.join(base_dir, "..", "public")
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    static_dir = os.path.join(base_dir, "static")
+    public_dir = os.path.join(base_dir, "public")
 
     print(f"Base dir: {base_dir}")
     print(f"Static dir: {static_dir}")
@@ -40,6 +40,14 @@ def main():
     os.mkdir(public_dir)
 
     copy_dir(static_dir, public_dir)
+
+    print(separator)
+
+    generate_page(
+        os.path.join(base_dir, 'content', 'index.md'),
+        os.path.join(base_dir, 'template.html'),
+        os.path.join(public_dir, 'index.html')
+    )
 
 
 def copy_dir(src_path, dest_path):

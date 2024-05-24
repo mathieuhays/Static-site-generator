@@ -123,8 +123,8 @@ def split_nodes_link(old_nodes):
 
 
 def text_to_text_nodes(text):
-    nodes = split_nodes_link([TextNode(text, text_type_text)])
-    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_image([TextNode(text, text_type_text)])
+    nodes = split_nodes_link(nodes)
     nodes = split_nodes_delimiter(nodes, "**", text_type_bold)
     nodes = split_nodes_delimiter(nodes, "*", text_type_italic)
     nodes = split_nodes_delimiter(nodes, "`", text_type_code)
@@ -148,12 +148,12 @@ def markdown_to_blocks(text):
 def block_to_heading(block):
     markup, text = block.split(' ', 1)
     heading_num = len(markup)
-    return ParentNode(f"h{heading_num}", text_to_text_nodes(text))
+    return ParentNode(f"h{heading_num}", block_content_to_html_nodes(text))
 
 
 def block_to_code(block):
     return ParentNode("pre", [
-        ParentNode("code", text_to_text_nodes(block.strip("```").strip()))
+        ParentNode("code", block_content_to_html_nodes(block.strip("```").strip()))
     ])
 
 
@@ -161,7 +161,7 @@ def block_to_list(block, list_tag):
     nodes = []
 
     for line in block.split("\n"):
-        nodes.append(ParentNode("li", text_to_text_nodes(line.split(' ', 1)[1])))
+        nodes.append(ParentNode("li", block_content_to_html_nodes(line.split(' ', 1)[1])))
 
     return ParentNode(list_tag, nodes)
 
@@ -171,11 +171,21 @@ def block_to_quote(block):
     for line in block.split("\n"):
         content.append(line[2:])
 
-    return ParentNode("blockquote", text_to_text_nodes("\n".join(content)))
+    return ParentNode("blockquote", block_content_to_html_nodes("\n".join(content)))
 
 
 def block_to_paragraph(block):
-    return ParentNode("p", text_to_text_nodes(block))
+    return ParentNode("p", block_content_to_html_nodes(block))
+
+
+def block_content_to_html_nodes(text):
+    text_nodes = text_to_text_nodes(text)
+    html_nodes = []
+
+    for text_node in text_nodes:
+        html_nodes.append(text_node_to_html_node(text_node))
+
+    return html_nodes
 
 
 def block_to_html_node(block):
@@ -201,4 +211,3 @@ def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
     nodes = list(map(lambda b: block_to_html_node(b), blocks))
     return ParentNode("div", nodes)
-
