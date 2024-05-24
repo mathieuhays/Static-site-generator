@@ -10,7 +10,14 @@ block_type_ordered_list = "ordered_list"
 def block_to_block_type(block):
     l = len(block)
 
-    if l >= 1 and block[0] == "#":
+    if (
+        block.startswith("# ") or
+        block.startswith("## ") or
+        block.startswith("### ") or
+        block.startswith("#### ") or
+        block.startswith("##### ") or
+        block.startswith("###### ")
+    ):
         return block_type_heading
     if l >= 6 and block[:3] == "```" and block[-3:] == "```":
         return block_type_code

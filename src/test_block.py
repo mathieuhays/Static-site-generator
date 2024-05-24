@@ -16,7 +16,20 @@ class TestBlock(unittest.TestCase):
     def test_block_conversion_heading(self):
         self.assertEqual(
             block_type_heading,
-            block_to_block_type("# Heading")
+            block_to_block_type("# Heading"),
+            "Valid h1 heading"
+        )
+
+        self.assertEqual(
+            block_type_heading,
+            block_to_block_type("###### Heading"),
+            "Valid h6 heading"
+        )
+
+        self.assertEqual(
+            block_type_paragraph,
+            block_to_block_type("####### Heading"),
+            "Invalid heading, falling back to paragraph"
         )
 
     def test_block_conversion_code(self):
