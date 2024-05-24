@@ -23,6 +23,9 @@ class HTMLNode:
         return f"HTMLNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
 
     def __eq__(self, other):
+        if other is None:
+            return False
+
         return (
             self.tag == other.tag and
             self.value == other.value and

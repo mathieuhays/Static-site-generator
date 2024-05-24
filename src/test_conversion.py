@@ -1,10 +1,12 @@
 import unittest
 
 from conversion import (text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link,
-                        text_to_text_nodes, markdown_to_blocks)
+                        text_to_text_nodes, markdown_to_blocks, block_to_heading, block_to_code, block_to_list,
+                        block_to_quote, block_to_paragraph, markdown_to_html_node)
 from leafnode import LeafNode
 from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link, \
     text_type_code
+from parentnode import ParentNode
 
 
 class TestConversion(unittest.TestCase):
@@ -173,6 +175,85 @@ This is the same paragraph on a new line
             )
         ]
         self.assertEqual(expected, markdown_to_blocks(test_input))
+
+    def test_block_to_heading(self):
+        content = "### Heading *italic* test"
+        expected = ParentNode("h3", [
+            TextNode("Heading ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" test", text_type_text)
+        ])
+        self.assertEqual(expected, block_to_heading(content))
+
+    def test_block_to_code(self):
+        content = "```\nbody { color: #fff; }\n```"
+        expected = ParentNode("pre", [
+            ParentNode("code", [
+                TextNode("body { color: #fff; }", text_type_text)
+            ])
+        ])
+        self.assertEqual(expected, block_to_code(content))
+
+    def test_block_to_list_ul(self):
+        content = "- item 1\n- item 2\n- item 3"
+        expected = ParentNode("ul", [
+            ParentNode("li", [TextNode("item 1", text_type_text)]),
+            ParentNode("li", [TextNode("item 2", text_type_text)]),
+            ParentNode("li", [TextNode("item 3", text_type_text)])
+        ])
+        self.assertEqual(expected, block_to_list(content, "ul"))
+
+    def test_block_to_list_ol(self):
+        content = "1. item 1\n2. item 2\n3. item 3"
+        expected = ParentNode("ol", [
+            ParentNode("li", [TextNode("item 1", text_type_text)]),
+            ParentNode("li", [TextNode("item 2", text_type_text)]),
+            ParentNode("li", [TextNode("item 3", text_type_text)])
+        ])
+        self.assertEqual(expected, block_to_list(content, "ol"))
+
+    def test_block_to_quote(self):
+        content = "> Lorem Ipsum\n> Dolor"
+        expected = ParentNode("blockquote", [
+            TextNode("Lorem Ipsum\nDolor", text_type_text)
+        ])
+        self.assertEqual(expected, block_to_quote(content))
+
+    def test_block_to_paragraph(self):
+        content = "Some content"
+        expected = ParentNode("p", [TextNode("Some content", text_type_text)])
+        self.assertEqual(expected, block_to_paragraph(content))
+
+    def test_markdown_to_html_node(self):
+        content = """
+# Heading
+
+Lorem **Ipsum** Dolor
+
+- list *item* 1
+- list `item` 2
+        """
+        expected = ParentNode("div", [
+            ParentNode("h1", [TextNode("Heading", text_type_text)]),
+            ParentNode("p", [
+                TextNode("Lorem ", text_type_text),
+                TextNode("Ipsum", text_type_bold),
+                TextNode(" Dolor", text_type_text)
+            ]),
+            ParentNode("ul", [
+                ParentNode("li", [
+                    TextNode("list ", text_type_text),
+                    TextNode("item", text_type_italic),
+                    TextNode(" 1", text_type_text)
+                ]),
+                ParentNode("li", [
+                    TextNode("list ", text_type_text),
+                    TextNode("item", text_type_code),
+                    TextNode(" 2", text_type_text)
+                ])
+            ])
+        ])
+        self.assertEqual(expected, markdown_to_html_node(content))
 
 
 if __name__ == "__main__":

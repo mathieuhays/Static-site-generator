@@ -9,6 +9,16 @@ from textnode import (
     TextNode
 )
 from extractors import extract_markdown_links, extract_markdown_images
+from block import (
+    get_block_type,
+    block_type_heading,
+    block_type_paragraph,
+    block_type_ordered_list,
+    block_type_code,
+    block_type_quote,
+    block_type_unordered_list
+)
+from parentnode import ParentNode
 
 
 def text_node_to_html_node(text_node):
@@ -133,3 +143,62 @@ def markdown_to_blocks(text):
         blocks.append(stripped)
 
     return blocks
+
+
+def block_to_heading(block):
+    markup, text = block.split(' ', 1)
+    heading_num = len(markup)
+    return ParentNode(f"h{heading_num}", text_to_text_nodes(text))
+
+
+def block_to_code(block):
+    return ParentNode("pre", [
+        ParentNode("code", text_to_text_nodes(block.strip("```").strip()))
+    ])
+
+
+def block_to_list(block, list_tag):
+    nodes = []
+
+    for line in block.split("\n"):
+        nodes.append(ParentNode("li", text_to_text_nodes(line.split(' ', 1)[1])))
+
+    return ParentNode(list_tag, nodes)
+
+
+def block_to_quote(block):
+    content = []
+    for line in block.split("\n"):
+        content.append(line[2:])
+
+    return ParentNode("blockquote", text_to_text_nodes("\n".join(content)))
+
+
+def block_to_paragraph(block):
+    return ParentNode("p", text_to_text_nodes(block))
+
+
+def block_to_html_node(block):
+    block_type = get_block_type(block)
+
+    if block_type == block_type_heading:
+        return block_to_heading(block)
+    if block_type == block_type_code:
+        return block_to_code(block)
+    if block_type == block_type_unordered_list:
+        return block_to_list(block, "ul")
+    if block_type == block_type_ordered_list:
+        return block_to_list(block, "ol")
+    if block_type == block_type_quote:
+        return block_to_quote(block)
+    if block_type == block_type_paragraph:
+        return block_to_paragraph(block)
+
+    raise ValueError("Invalid block type")
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    nodes = list(map(lambda b: block_to_html_node(b), blocks))
+    return ParentNode("div", nodes)
+
