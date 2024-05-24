@@ -46,9 +46,9 @@ def copy_dir(src_path, dest_path):
     print(f"copying contents from {src_path} to {dest_path}")
     objects = os.listdir(src_path)
 
-    for object in objects:
-        object_src_path = os.path.join(src_path, object)
-        object_dest_path = os.path.join(dest_path, object)
+    for item in objects:
+        object_src_path = os.path.join(src_path, item)
+        object_dest_path = os.path.join(dest_path, item)
 
         if os.path.isdir(object_src_path):
             print("copy_dir: creating dir: " + object_dest_path)
