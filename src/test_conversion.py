@@ -1,8 +1,8 @@
 import unittest
 
-from conversion import text_node_to_html_node, split_nodes_delimiter
+from conversion import text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link
 from leafnode import LeafNode
-from textnode import TextNode, text_type_bold, text_type_text, text_type_italic
+from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link
 
 
 class TestConversion(unittest.TestCase):
@@ -106,6 +106,32 @@ class TestConversion(unittest.TestCase):
     def test_split_raise_on_invalid_input(self):
         test_node = TextNode("Some **invalid input", text_type_text)
         self.assertRaises(Exception, lambda: split_nodes_delimiter([test_node], '**', text_type_bold))
+
+    def test_split_images(self):
+        test_node = TextNode(
+            "Hello there ![alt text](https://example.com/image.jpeg)! Another: ![test](/image.jpeg)",
+            text_type_text
+        )
+        expected = [
+            TextNode("Hello there ", text_type_text),
+            TextNode("alt text", text_type_image, "https://example.com/image.jpeg"),
+            TextNode("! Another: ", text_type_text),
+            TextNode("test", text_type_image, "/image.jpeg")
+        ]
+        self.assertEqual(expected, split_nodes_image([test_node]))
+
+    def test_split_links(self):
+        test_node = TextNode(
+            "Lorem Ipsum [click here](https://test.com). [read more](/articles)",
+            text_type_text
+        )
+        expected = [
+            TextNode("Lorem Ipsum ", text_type_text),
+            TextNode("click here", text_type_link, "https://test.com"),
+            TextNode(". ", text_type_text),
+            TextNode("read more", text_type_link, "/articles")
+        ]
+        self.assertEqual(expected, split_nodes_link([test_node]))
 
 
 if __name__ == "__main__":
