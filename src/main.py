@@ -1,7 +1,7 @@
 import os.path
 import shutil
 
-from generator import generate_page
+from generator import generate_pages_recursive
 
 separator = "==========================="
 
@@ -43,10 +43,10 @@ def main():
 
     print(separator)
 
-    generate_page(
-        os.path.join(base_dir, 'content', 'index.md'),
+    generate_pages_recursive(
+        os.path.join(base_dir, 'content'),
         os.path.join(base_dir, 'template.html'),
-        os.path.join(public_dir, 'index.html')
+        public_dir
     )
 
 
