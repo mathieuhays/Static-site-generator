@@ -1,6 +1,6 @@
 import unittest
 
-from extractors import extract_markdown_images, extract_markdown_links
+from extractors import extract_markdown_images, extract_markdown_links, extract_title
 
 
 class TestExtractors(unittest.TestCase):
@@ -20,6 +20,14 @@ class TestExtractors(unittest.TestCase):
         ]
         test_string = ("Lorem [homepage](https://example.com). Ipsum ![image](https://example.com/image.jpeg) Dolor. [contact page](https://example.com/contact)")
         self.assertEqual(expected, extract_markdown_links(test_string))
+
+    def test_title_extractor(self):
+        test_string = "# Lorem Ipsum"
+        self.assertEqual("Lorem Ipsum", extract_title(test_string))
+
+        test2 = "Some text\n# test\nanother test"
+        self.assertEqual("test", extract_title(test2))
+
 
 if __name__ == "__main__":
     unittest.main()
