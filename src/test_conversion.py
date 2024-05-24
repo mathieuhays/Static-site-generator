@@ -1,8 +1,8 @@
 import unittest
 
-from conversion import text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link
+from conversion import text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_text_nodes
 from leafnode import LeafNode
-from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link
+from textnode import TextNode, text_type_bold, text_type_text, text_type_italic, text_type_image, text_type_link, text_type_code
 
 
 class TestConversion(unittest.TestCase):
@@ -132,6 +132,22 @@ class TestConversion(unittest.TestCase):
             TextNode("read more", text_type_link, "/articles")
         ]
         self.assertEqual(expected, split_nodes_link([test_node]))
+
+    def test_text_to_nodes(self):
+        test_string = "This is **text** with an *italic* word and a `code block` and an ![image](/img.png) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with an ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" word and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("image", text_type_image, "/img.png"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev")
+        ]
+        self.assertEqual(expected, text_to_text_nodes(test_string))
 
 
 if __name__ == "__main__":
