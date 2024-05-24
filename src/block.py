@@ -7,9 +7,7 @@ block_type_unordered_list = "unordered_list"
 block_type_ordered_list = "ordered_list"
 
 
-def block_to_block_type(block):
-    l = len(block)
-
+def get_block_type(block):
     if (
         block.startswith("# ") or
         block.startswith("## ") or
@@ -19,7 +17,8 @@ def block_to_block_type(block):
         block.startswith("###### ")
     ):
         return block_type_heading
-    if l >= 6 and block[:3] == "```" and block[-3:] == "```":
+
+    if len(block) >= 6 and block[:3] == "```" and block[-3:] == "```":
         return block_type_code
 
     lines = block.split("\n")
